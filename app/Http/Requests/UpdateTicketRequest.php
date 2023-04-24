@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TicketStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateTicketRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class UpdateTicketRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,9 @@ class UpdateTicketRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'admin_id' => 'required|integer',
+            'status' => [new Enum(TicketStatusEnum::class)],
+            'comment' => 'required_if:status,Resolved|string|max:1000',
         ];
     }
 }

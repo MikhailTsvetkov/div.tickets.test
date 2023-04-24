@@ -9,4 +9,4 @@ use App\Http\Controllers\TicketController;
     return $request->user();
 });*/
 
-Route::apiResource('requests', TicketController::class);
+Route::apiResource('requests', TicketController::class)->parameters(['requests' => 'id']);

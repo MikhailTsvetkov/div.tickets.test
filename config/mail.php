@@ -2,6 +2,8 @@
 
 return [
 
+    'driver' => 'log',
+
     /*
     |--------------------------------------------------------------------------
     | Default Mailer
@@ -32,6 +34,7 @@ return [
     |            "postmark", "log", "array", "failover"
     |
     */
+
 
     'mailers' => [
         'smtp' => [

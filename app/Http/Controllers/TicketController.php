@@ -84,15 +84,33 @@ class TicketController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Reply to the request by the responsible person.
      *
      * @param  \App\Http\Requests\UpdateTicketRequest  $request
-     * @param  \App\Models\Ticket  $ticket
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTicketRequest $request, Ticket $ticket)
+    public function update(UpdateTicketRequest $request, int $id)
     {
-        //
+        $data = $request->validated();
+
+        $ticket = Ticket::find($id);
+        $ticket->admin_id = $request->admin_id;
+        $ticket->status = $request->status;
+        if (isset($request->comment)) {
+            $ticket->comment = $request->comment;
+        }
+
+        try {
+            $ticket->save();
+        } catch (Throwable $e) {
+            return response([
+                'status' => 'error',
+                'message' => 'Failed to save ticket to database.',
+            ], 500);
+        }
+
+        return response(null, 204);
     }
 
     /**
