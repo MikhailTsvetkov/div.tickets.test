@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Filters\TicketFilter;
 use App\Http\Requests\IndexTicketRequest;
+use App\Mail\ReplyToTicketMail;
 use App\Models\Ticket;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class TicketController extends Controller
@@ -108,6 +110,10 @@ class TicketController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to save ticket to database.',
             ], 500);
+        }
+
+        if (isset($request->comment)) {
+            Mail::to($ticket->email)->send(new ReplyToTicketMail($request->comment));
         }
 
         return response(null, 204);
