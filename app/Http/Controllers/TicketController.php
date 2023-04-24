@@ -20,20 +20,13 @@ class TicketController extends Controller
      */
     public function index(IndexTicketRequest $request)
     {
+        if (! auth('sanctum')->user()->is_admin) {
+            return response('Resource not found', 404);
+        }
         $data = $request->validated();
         $filter = app()->make(TicketFilter::class, ['queryParams' => array_filter($data)]);
         $tickets = Ticket::filter($filter)->orderBy($request->sort, $request->direction)->get();
         return response($tickets);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -47,6 +40,8 @@ class TicketController extends Controller
         $data = $request->validated();
 
         $ticket = new Ticket();
+//        $ticket->name = auth('sanctum')->user()->name;
+//        $ticket->email = auth('sanctum')->user()->email;
         $ticket->name = $request->name;
         $ticket->email = $request->email;
         $ticket->message = $request->message;
@@ -64,28 +59,6 @@ class TicketController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Ticket $ticket)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Ticket $ticket)
-    {
-        //
-    }
-
-    /**
      * Reply to the request by the responsible person.
      *
      * @param  \App\Http\Requests\UpdateTicketRequest  $request
@@ -94,10 +67,14 @@ class TicketController extends Controller
      */
     public function update(UpdateTicketRequest $request, int $id)
     {
+        if (! auth('sanctum')->user()->is_admin) {
+            return response('Resource not found', 404);
+        }
+
         $data = $request->validated();
 
         $ticket = Ticket::find($id);
-        $ticket->admin_id = $request->admin_id;
+        $ticket->admin_id = auth('sanctum')->user()->admin_id;
         $ticket->status = $request->status;
         if (isset($request->comment)) {
             $ticket->comment = $request->comment;
@@ -113,20 +90,9 @@ class TicketController extends Controller
         }
 
         if (isset($request->comment)) {
-            Mail::to($ticket->email)->send(new ReplyToTicketMail($request->comment));
+            Mail::to(6)->send(new ReplyToTicketMail($request->comment));
         }
 
         return response(null, 204);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Ticket $ticket)
-    {
-        //
     }
 }

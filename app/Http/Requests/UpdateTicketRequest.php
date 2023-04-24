@@ -26,7 +26,6 @@ class UpdateTicketRequest extends FormRequest
     public function rules()
     {
         return [
-            'admin_id' => 'required|integer',
             'status' => [new Enum(TicketStatusEnum::class)],
             'comment' => 'required_if:status,Resolved|string|max:1000',
         ];

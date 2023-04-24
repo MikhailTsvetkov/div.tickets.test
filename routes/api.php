@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
@@ -9,4 +10,8 @@ use App\Http\Controllers\TicketController;
     return $request->user();
 });*/
 
-Route::apiResource('requests', TicketController::class)->parameters(['requests' => 'id']);
+Route::group(['middleware' => 'auth:sanctum'], function(){
+    Route::apiResource('requests', TicketController::class)->parameters(['requests' => 'id']);
+});
+
+Route::post("login",[UserController::class,'index']);
